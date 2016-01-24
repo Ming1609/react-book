@@ -6,6 +6,7 @@
 
 点击右上角的 **[Watch](https://github.com/nimojs/learn-react/subscription)** 订阅本书，点击 Star 收藏本书。
 
+[下载示例](https://github.com/nimojs/learn-react/archive/gh-pages.zip)
 
 建议先阅读 [官方中文教程 0.13.x](http://reactjs.cn/react/docs/getting-started.html) 或者 [官网英文教程 0.14.x](http://facebook.github.io/react/)
 
