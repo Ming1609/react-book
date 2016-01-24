@@ -12,6 +12,7 @@
 > 注意：本系列代码基于 React 0.14.x。 在 `0.14.x` 中 `React.render` 被 `ReactDOM.render` 替代。参考： [React v0.14](http://facebook.github.io/react/blog/2015/10/07/react-v0.14.html)
 
 **索引：**
+
 1. [state](example/1-state.html)
 1. [props](example/2-props.html)
 1. [显示列表和删除列表](example/3-list.html)
