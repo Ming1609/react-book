@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+    本页面是 React 常用 API 使用模板，用于新手开发时作为参考
+<div id="demo"></div>
+<script src="../static/es5-shim.min.js"></script>
+<script src="../static/es5-sham.min.js"></script>
+<script src="../static/console-polyfill.js"></script>
+<script src="../static/classnames.js"></script>
+<script src="../static/react.js"></script>
+<script src="../static/react-dom.js"></script>
+<script src="../static/JSXTransformer.js"></script>
+<script type="text/jsx">
+var commonMixins = {
+    componentWillMount: function () {
+        console.log('组件初始化渲染之前(mixins 配置)')
+    }
+}
+var age = {
+    i:1
+}
+age.i++
+var Box = React.createClass({
+    // 混合状态
+    mixins: [commonMixins],
+    // 静态方法
+    statics: {
+        getMyName: function () {
+            console.log('getMyName:nimo')
+        }
+    },
+    // prop 验证 http://reactjs.cn/react/docs/reusable-components.html#prop-
+    propTypes: {
+        name: React.PropTypes.string
+    },
+    getDefaultProps: function () {
+        return {
+            age: age
+        }
+    },
+    // 初始化状态
+    getInitialState: function () {
+        return {
+            count: 1
+        }
+    },
+    componentWillMount: function () {
+        console.log('组件初始化渲染之前')
+    },
+    componentDidMount: function () {
+        var self = this
+        self.timeout = setTimeout(function callee() {
+            self.setState({
+                cout: self.state.count++
+            })
+            console.log('递增:' + self.state.count)
+            self.timeout = setTimeout(callee, 1000)
+        },1000)
+        console.log('组件初次渲染时')
+    },
+    componentWillReceiveProps: function () {
+        console.log('在组件接收到新的 props 的时候调用')
+    },
+    shouldComponentUpdate: function () {
+        console.log('在接收到新的 props 或者 state，将要渲染之前调用')
+        return true
+    },
+    componentWillUpdate: function () {
+        console.log('在接收到新的 props 或者 state 之前立刻调用')
+    },
+    componentDidUpdate: function () {
+        console.log('在组件的更新已经同步到 DOM 中之后立刻被调用')
+    },
+    componentWillUnmount: function () {
+        var self = this
+        clearTimeout(self.timeout)
+        console.log('组件被销毁')
+    },
+    render: function () {
+        return <div>Hello {this.props.name} {this.props.age.i}, {this.state.count}</div>
+    }
+})
+var props = {
+    name: 'nimo'
+}
+var myBox = ReactDOM.render(<Box {...props} />, document.getElementById('demo'))
+Box.getMyName()
+// 销毁组件
+// React.unmountComponentAtNode(document.getElementById('demo'), document.body)
+// 手动运行 render
+// myBox.forceUpdate()
+// 获取 DOM 组件元素
+// myBox.getDOMNode()
+</script>
+</body>
+</html>
