@@ -13,6 +13,6 @@
 
 **索引：**
 
-1. [state](example/1-state.html)
-1. [props](example/2-props.html)
-1. [显示列表和删除列表](example/3-list.html)
+1. [state](http://nimojs.github.io/learn-react/example/1-state.html)
+1. [props](http://nimojs.github.io/learn-react/example/2-props.html)
+1. [显示列表和删除列表](http://nimojs.github.io/learn-react/example/3-list.html)
