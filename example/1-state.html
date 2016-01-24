@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+
+</head>
+<body>
+熟悉 state 改变后的『重绘』
+<div id="demo"></div>
+
+<script src="../static/es5-shim.min.js"></script>
+<script src="../static/es5-sham.min.js"></script>
+<script src="../static/console-polyfill.js"></script>
+<script src="../static/classnames.js"></script>
+<script src="../static/react.js"></script>
+<script src="../static/react-dom.js"></script>
+<script src="../static/JSXTransformer.js"></script>
+
+<script type="text/jsx">
+
+var Demo = React.createClass({
+    getInitialState: function () {
+        return {
+            ok: false
+        }
+    },
+    toggle: function () {
+        var self = this
+        this.setState({
+            ok: !this.state.ok
+        })
+    },
+    render: function () {
+        var self = this
+        // jsx 中必须有一个父元素包裹（删除 div 会报错）
+        return (
+            <div>
+            <button onClick={this.toggle}>Click</button>
+            {self.state.ok? 'ok': 'err'}
+            </div>
+        )
+    }
+})
+ReactDOM.render(<Demo />, document.getElementById('demo'))
+</script>
+</body>
+</html>
