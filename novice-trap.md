@@ -45,5 +45,11 @@ return (
 **Forms:* http://reactjs.cn/react/docs/forms.html
 
 ---
-修改受限的 `<input type="checkbox"  />
+
+如何修改受限的 `<input type="checkbox"  />
+
+---
+
+`<input onChange={this.saveValue} value={this.state.value} />` 碰上中文输入法会出现 `wenzi文字` ,需要用 `defaultValue` 替代 `value`
+
 ---
