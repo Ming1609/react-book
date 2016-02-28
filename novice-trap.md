@@ -45,3 +45,5 @@ return (
 **Forms:* http://reactjs.cn/react/docs/forms.html
 
 ---
+修改受限的 `<input type="checkbox"  />
+---
