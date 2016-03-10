@@ -53,3 +53,7 @@ return (
 `<input onChange={this.saveValue} value={this.state.value} />` 碰上中文输入法会出现 `wenzi文字` ,需要用 `defaultValue` 替代 `value`
 
 ---
+
+`<textarea>abc</textarea>` x  `<textarea value="abc" />` ✓
+
+---
