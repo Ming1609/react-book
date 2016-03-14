@@ -57,3 +57,7 @@ return (
 `<textarea>abc</textarea>` x  `<textarea value="abc" />` ✓
 
 ---
+
+Composition Events
+
+---
