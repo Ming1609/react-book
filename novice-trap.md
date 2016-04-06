@@ -46,7 +46,7 @@ return (
 
 ---
 
-如何修改受限的 `<input type="checkbox"  />
+如何修改受限的 `<input type="checkbox"  />`
 
 ---
 
@@ -59,5 +59,12 @@ return (
 ---
 
 Composition Events
+
+---
+
+setState 可能会延迟 
+
+> setState() 不会立刻改变 this.state，而是创建一个即将处理的 state 转变。在调用该方法之后获取 this.state 的值可能会得到现有的值，而不是最新设置的值。
+不保证 setState() 调用的同步性，为了提升性能，可能会批量执行 state 转变和 DOM 渲染。
 
 ---
