@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>中文输入法 - composition</title>
+</head>
+<body>
+<div id="demo"></div>
+<script src="../static/es5-shim.min.js"></script>
+<script src="../static/es5-sham.min.js"></script>
+<script src="../static/console-polyfill.js"></script>
+<script src="../static/classnames.js"></script>
+<script src="../static/react.js"></script>
+<script src="../static/react-dom.js"></script>
+<script src="../static/JSXTransformer.js"></script>
+<script type="text/jsx">
+var App = React.createClass({
+    getInitialState: function () {
+        return {
+            changeText: '',
+            compositionText: ''
+        }
+    },
+    inputOnChange: function (e) {
+        this.setState({
+            changeText: e.target.value
+        })
+    },
+    inputOnComposition: function (e) {
+        this.setState({
+            compositionText: e.target.value
+        })
+    },
+    render: function () {
+        return (
+            <div>
+            changeText: {this.state.changeText}
+            <br />
+            <input onChange={this.inputOnChange} placeholder="用中文输入法输入" />
+            <hr />
+            compositionText: {this.state.compositionText}
+            <br />
+            <input onCompositionEnd={this.inputOnComposition} placeholder="用中文输入法输入" />
+            </div>
+        )
+    }
+})
+
+
+
+
+ReactDOM.render(<App />, document.getElementById('demo'))
+</script>
+</body>
+</html>
