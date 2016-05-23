@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>列表 - 子组件与父组件</title>
+    <style>
+.item {
+    font-size:30px;
+    border-bottom:1px dashed #ccc;
+}
+.item-remove {
+    color:red;
+    cursor:pointer;
+    padding-left: 1em;
+    padding-right: 1em;
+}
+    </style>
+</head>
+<body>
+<div id="demo"></div>
+<script src="../static/es5-shim.min.js"></script>
+<script src="../static/es5-sham.min.js"></script>
+<script src="../static/console-polyfill.js"></script>
+<script src="../static/classnames.js"></script>
+<script src="../static/react.js"></script>
+<script src="../static/react-dom.js"></script>
+<script src="../static/JSXTransformer.js"></script>
+<script type="text/jsx">
+var App = React.createClass({
+    propTypes: {
+        data: React.PropTypes.arrayOf(React.PropTypes.object)
+    },
+    getInitialState: function () {
+        return {
+            data: this.props.data
+        }
+    },
+    removeChild: function (id) {
+        var newData = []
+        this.state.data.forEach(function (item) {
+            if (item.id !== id) {
+                newData.push(item)
+            }
+        })
+        this.setState({
+            data: newData
+        })
+    },
+    render: function () {
+        var self = this
+        // 子组件只负责渲染
+        return (
+            <div>
+                {
+                    self.state.data.map(function (item, i) {
+                        return <Item {...item} key={i} removeChild={self.removeChild} />
+                    })
+                }
+            </div>
+        )
+    }
+})
+
+var Item = React.createClass({
+    // 父级将方法通过 props 传递给子组件，供子组件在用户交互时调用
+    removeOnClick: function () {
+        this.props.removeChild(this.props.id)
+    },
+    render: function () {
+        return (
+            <div className="item" >
+                <span className="item-remove" onClick={this.removeOnClick} >x</span>
+                {this.props.text}
+            </div>
+        )
+    }
+})
+
+var props = {
+    data: [
+        {
+            text: 'html',
+            id: '1'
+        },
+        {
+            text: 'css',
+            id: '2'
+        },
+        {
+            text: 'js',
+            id: '3'
+        }
+    ]
+}
+ReactDOM.render(<App {...props} />, document.getElementById('demo'))
+</script>
+</body>
+</html>
