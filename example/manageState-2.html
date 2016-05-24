@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../static/typo.css" >
+    <title>统一状态管理函数</title>
+<style media="screen">
+label {
+    display: inline-block;
+    width:400px;
+}
+.disable {
+    opacity: .2;
+}
+.app {
+    margin-bottom: 30px;
+    border:1px solid #DDD;
+    border-radius: 3px;
+    background-color: #F5F5F5;
+    padding:10px;
+}
+.price {
+    color:orange;
+}
+.tips {
+    color:#888;
+    font-size:12px;
+}
+.tips:hover {
+    color:#333;
+}
+.desc {
+    opacity: .5;
+}
+</style>
+</head>
+<body>
+<p>
+    需求：商品付款时候的选择使用余额和使用网银支付
+</p>
+<ol>
+    <li>优先使用余额支付</li>
+    <li>@1 余额能完全支付则网银支付选项被禁用，并取消选中状态</li>
+    <li>@2 余额无法完全支付时，剩余金额可使用网银支付</li>
+</ol>
+
+<p>
+    <strong>为满足 @1 本例使用 ms<span class="desc">(manageState)</span> 方法管理 state</strong>
+</p>
+
+<div id="demo1"></div>
+
+<div id="demo2"></div>
+
+<blockquote class="tips" >
+复杂应用的状态管理最好使用类似 redux 的库管理状态
+<h2>哪些应该作为 State？</h2>
+<p><strong>State 应该包括那些可能被组件的事件处理器改变并触发用户界面更新的数据。</strong> 真实的应用中这种数据一般都很小且能被 JSON 序列化。当创建一个状态化的组件时，想象一下表示它的状态最少需要哪些数据，并只把这些数据存入 <code>this.state</code>。在 <code>render()</code> 里再根据 state 来计算你需要的其它数据。你会发现以这种方式思考和开发程序最终往往是正确的，因为如果在 state 里添加冗余数据或计算所得数据，需要你经常手动保持数据同步，不能让 React 来帮你处理。</p>
+<h2>哪些不应该作为 State？</h2>
+<p><code>this.state</code> 应该仅包括能表示用户界面状态所需的最少数据。因此，它不应该包括：</p>
+<ul>
+<li><strong>计算所得数据：</strong> 不要担心根据 state 来预先计算数据 —— 把所有的计算都放到 <code>render()</code> 里更容易保证用户界面和数据的一致性。例如，在 state 里有一个数组（listItems），我们要把数组长度渲染成字符串， 直接在 <code>render()</code> 里使用 <code>this.state.listItems.length + ' list items'</code> 比把它放到 state 里好的多。</li>
+<li><strong>React 组件：</strong> 在 <code>render()</code> 里使用当前 props 和 state 来创建它。</li>
+<li><strong>基于 props 的重复数据：</strong> 尽可能使用 props 来作为惟一数据来源。把 props 保存到 state 的一个有效的场景是需要知道它以前值的时候，因为未来的 props 可能会变化。</li>
+</ul>
+<strong><a href="http://reactjs.cn/react/docs/interactivity-and-dynamic-uis.html">来源文档</a></strong>
+</blockquote>
+<script src="../static/es5-shim.min.js"></script>
+<script src="../static/es5-sham.min.js"></script>
+<script src="../static/console-polyfill.js"></script>
+<script src="../static/classnames.js"></script>
+<script src="../static/react.js"></script>
+<script src="../static/react-dom.js"></script>
+<script src="../static/JSXTransformer.js"></script>
+<script type="text/jsx">
+var App = React.createClass({
+    propTypes: {
+        pay: React.PropTypes.number.isRequired,
+        balance: React.PropTypes.number.isRequired
+    },
+    getInitialState: function () {
+        return {
+            // 使用余额支付
+            balanceCheck: false,
+            // 使用网银支付
+            bankCheck: true,
+            // 余额支付金额 (通过 ms 计算改变)
+            balancePay: 0
+        }
+    },
+    componentWillMount: function () {
+        // DOM 第一次渲染之前触发 INIT 让 ms 根据已有 props 和 state 扩展新的 state
+        this.ms({
+            type: 'INIT'
+        })
+    },
+    // 所有的 state 修改必须通过 ms (manageState)
+    ms: function (action) {
+        var state = this.state
+        var props = this.props
+        switch (action.type) {
+            case 'INIT':
+            break
+            case 'BALANCE_CHECK_CHANGE':
+            state.balanceCheck = !state.balanceCheck
+            break
+            case 'BANK_CHECK_CHANGE':
+            state.bankCheck = !state.bankCheck
+            break
+            default:
+        }
+        /* 使用余额支付
+            balancePay 即要显示在界面，也影响网银支付是否被选中
+           余额支付金额不在 render 中计算而是存放在 state 中是因为要根据余额支付的金额
+           决定网银支付 checkbox 是否被取消
+
+           如果将 balancePay 的计算逻辑和 bankCheck 是否选中在 render 中处理就会造成
+           1. state.balancePay === props.pay 时候网银选项是取消选中的
+           2. 但网银选项的 state.bankCheck 可能是 true
+           3. state.balancePay === props.pay 时候必须修改 state.bankCheck
+           4. 而在 render函数中是不可以更改 state 的
+        */
+        if (state.balanceCheck) {
+            // 余额不能完全支付
+            if (props.pay > props.balance) {
+                // 余额支付金额为全部余额
+                state.balancePay = props.balance
+            }
+            // 余额完全支付
+            else {
+                // 余额支付金额为需支付金额
+                state.balancePay = props.pay
+            }
+        }
+        // 不使用余额支付则余额支付 0 元
+        else {
+            state.balancePay = 0
+        }
+
+        // @1 余额能完全支付则网银支付选项被禁用，并取消选中状态
+        if (this.state.balancePay === this.props.pay) {
+            state.bankCheck = false
+        }
+
+        // 整个组件只允许在这里写 setState
+        // 因为不通过 ms 管理 balancePay 等状态无法正确更新
+        this.setState(state)
+    },
+    balanceCheckOnChange: function () {
+        this.ms({
+            type: 'BALANCE_CHECK_CHANGE'
+        })
+    },
+    bankCheckOnChange: function () {
+        this.ms({
+            type: 'BANK_CHECK_CHANGE'
+        })
+    },
+    render: function () {
+        var state = this.state
+        var props = this.props
+        let bankPay
+        // 网银支付金额没有在 ms 中管理是因为：(哪些 应该 作为 State？  哪些 不应该 作为 State？)
+
+        // 使用网银支付
+        if (state.bankCheck) {
+            // 网银支付金额等于应付总计 - 余额支付金额
+            bankPay = props.pay - state.balancePay
+        }
+        // 不使用网银支付
+        else {
+            bankPay = 0
+        }
+        return (
+            <div className="app" >
+            总计应付：<span className="price" >{props.pay}</span>
+            <hr />
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                        <label><input type="checkbox" checked={state.balanceCheck} onChange={this.balanceCheckOnChange} />余额支付（账户余额为：<span className="price" >{this.props.balance}</span>）</label>
+                        </td>
+                        <td>
+                        余额支付：<span className="price" >{state.balancePay}</span>
+                        </td>
+                    </tr>
+                    <tr className={classNames({
+                        "disable": state.balancePay === props.pay
+                    })}>
+                    {/*
+                        @1 余额能完全支付则网银支付选项被禁用，并取消选中状态
+
+                        没有创建一个 余额能完全支付的状态（balanceAfford）是因为：(哪些 应该 作为 State？  哪些 不应该 作为 State？)
+                    */}
+                        <td>
+                        <label><input type="checkbox"  checked={state.bankCheck} onChange={this.bankCheckOnChange} />网银支付</label>
+                        </td>
+                        <td>
+                        <span className="price" >{bankPay}</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+        )
+    }
+})
+var props1 = {
+    pay: 1000,
+    balance: 200
+}
+ReactDOM.render(<App {...props1} />, document.getElementById('demo1'))
+var props2 = {
+    pay: 100,
+    balance: 200
+}
+ReactDOM.render(<App {...props2} />, document.getElementById('demo2'))
+</script>
+</body>
+</html>
