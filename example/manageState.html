@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../static/typo.css" >
+    <title>统一状态管理函数</title>
+<style>
+label {
+    border:1px dashed #CCC;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    padding-right: 5px;
+    cursor: pointer;
+}
+</style>
+</head>
+<body>
+<p>
+    最多只能选中3项
+</p>
+<div id="demo1"></div>
+
+<script src="../static/es5-shim.min.js"></script>
+<script src="../static/es5-sham.min.js"></script>
+<script src="../static/console-polyfill.js"></script>
+<script src="../static/classnames.js"></script>
+<script src="../static/react.js"></script>
+<script src="../static/react-dom.js"></script>
+<script src="../static/JSXTransformer.js"></script>
+<script type="text/jsx">
+var App = React.createClass({
+    getInitialState: function () {
+        return {
+            data: this.props.data.map(function (item) {
+                item.checked = false
+                return item
+            }),
+            checkedQueue: []
+        }
+    },
+    componentWillMount: function () {
+        // DOM 第一次渲染之前触发 INIT 让 ms 根据已有 props 和 state 扩展新的 state
+        this.ms({
+            type: 'INIT'
+        })
+    },
+    // 所有的 state 修改必须通过 ms (manageState)
+    ms: function (action) {
+        var state = this.state
+        var props = this.props
+        let isChecked = false
+        switch (action.type) {
+            case 'INIT':
+            break
+            case 'CHANGE_CHECK':
+            // 可跳过理解这段代码
+            // 改变 id 对应数据的 checked
+            // 并将选中项加入 checkedQueue
+            // checkedQueue 供后续选择限制时调用
+            state.data.map(function (item) {
+                if (item.id === action.id) {
+                    item.checked = !item.checked
+                    if (item.checked) {
+                        isChecked = true
+                        state.checkedQueue.push(action.id)
+                    }
+                    else {
+                        let newCheckedQueue = []
+                        state.checkedQueue.forEach(function (queueId) {
+                            if (queueId !== action.id) {
+                                newCheckedQueue.push(queueId)
+                            }
+                        })
+                        state.checkedQueue = newCheckedQueue
+                    }
+                }
+                return item
+            })
+            break
+            default:
+        }
+        // 通过 ms 可以在某个数据 checked 改变时计算，符合某些规则时修改其他元素的 checked
+        // 最多只允许选3个
+        if (isChecked && state.checkedQueue.length > 3) {
+            var lastCheck = state.checkedQueue.shift()
+            state.data = state.data.map(function (item) {
+                if (item.id === lastCheck) {
+                    item.checked = false
+                }
+                return item
+            })
+        }
+        // 整个组件只允许在这里写 setState
+        this.setState(state)
+    },
+    check: function (id) {
+        this.ms({
+            type: 'CHANGE_CHECK',
+            id: id
+        })
+    },
+    render: function () {
+        var self = this
+        var state = this.state
+        var props = this.props
+
+        return (
+            <div className="app" >
+            {
+                state.data.map(function (item, i) {
+                    return (
+                        <Item {...item} key={i} check={self.check} />
+                    )
+                })
+            }
+            </div>
+        )
+    }
+})
+var Item = React.createClass({
+    inputOnChange: function () {
+        this.props.check(this.props.id)
+    },
+    render: function () {
+        return (
+            <label><input type="checkbox" checked={this.props.checked} onChange={this.inputOnChange}  />{this.props.text}</label>
+        )
+    }
+})
+var props1 = {
+    data: [
+        {
+            text: 'a',
+            id: 1
+        },
+        {
+            text: 'b',
+            id: 2
+        },
+        {
+            text: 'c',
+            id: 3
+        },
+        {
+            text: 'd',
+            id: 4
+        },
+        {
+            text: 'e',
+            id: 5
+        },
+        {
+            text: 'f',
+            id: 6
+        },
+        {
+            text: 'g',
+            id: 7
+        }
+    ]
+}
+ReactDOM.render(<App {...props1} />, document.getElementById('demo1'))
+</script>
+</body>
+</html>
