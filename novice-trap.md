@@ -84,6 +84,8 @@ Forms: http://reactjs.cn/react/docs/forms.html
 
 使用 `onCompositionEnd` `onCompositionStart` `onCompositionUpdate` 解决中文输入法导致的 value 更新问题
 
+[示例](./example/composition.html)
+
 ## setState的延迟
 
 > setState() 不会立刻改变 this.state，而是创建一个即将处理的 state 转变。在调用该方法之后获取 this.state 的值可能会得到现有的值，而不是最新设置的值。
