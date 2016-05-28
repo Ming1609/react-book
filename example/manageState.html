@@ -35,7 +35,7 @@ var App = React.createClass({
                 item.checked = false
                 return item
             }),
-            checkedQueue: []
+            _checkedQueue: []
         }
     },
     componentWillMount: function () {
@@ -55,23 +55,23 @@ var App = React.createClass({
             case 'CHANGE_CHECK':
             // 可跳过理解这段代码
             // 改变 id 对应数据的 checked
-            // 并将选中项加入 checkedQueue
-            // checkedQueue 供后续选择限制时调用
+            // 并将选中项加入 _checkedQueue
+            // _checkedQueue 供后续选择限制时调用
             state.data.map(function (item) {
                 if (item.id === action.id) {
                     item.checked = !item.checked
                     if (item.checked) {
                         isChecked = true
-                        state.checkedQueue.push(action.id)
+                        state._checkedQueue.push(action.id)
                     }
                     else {
                         let newCheckedQueue = []
-                        state.checkedQueue.forEach(function (queueId) {
+                        state._checkedQueue.forEach(function (queueId) {
                             if (queueId !== action.id) {
                                 newCheckedQueue.push(queueId)
                             }
                         })
-                        state.checkedQueue = newCheckedQueue
+                        state._checkedQueue = newCheckedQueue
                     }
                 }
                 return item
@@ -81,8 +81,8 @@ var App = React.createClass({
         }
         // 通过 ms 可以在某个数据 checked 改变时计算，符合某些规则时修改其他元素的 checked
         // 最多只允许选3个
-        if (isChecked && state.checkedQueue.length > 3) {
-            var lastCheck = state.checkedQueue.shift()
+        if (isChecked && state._checkedQueue.length > 3) {
+            var lastCheck = state._checkedQueue.shift()
             state.data = state.data.map(function (item) {
                 if (item.id === lastCheck) {
                     item.checked = false
