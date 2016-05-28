@@ -85,7 +85,7 @@ var App = React.createClass({
             // 使用网银支付
             bankCheck: true,
             // 余额支付金额 (通过 ms 计算改变)
-            balancePay: 0
+            _balancePay: 0
         }
     },
     componentWillMount: function () {
@@ -110,40 +110,40 @@ var App = React.createClass({
             default:
         }
         /* 使用余额支付
-            balancePay 即要显示在界面，也影响网银支付是否被选中
+            _balancePay 即要显示在界面，也影响网银支付是否被选中
            余额支付金额不在 render 中计算而是存放在 state 中是因为要根据余额支付的金额
            决定网银支付 checkbox 是否被取消
 
-           如果将 balancePay 的计算逻辑和 bankCheck 是否选中在 render 中处理就会造成
-           1. state.balancePay === props.pay 时候网银选项是取消选中的
+           如果将 _balancePay 的计算逻辑和 bankCheck 是否选中在 render 中处理就会造成
+           1. state._balancePay === props.pay 时候网银选项是取消选中的
            2. 但网银选项的 state.bankCheck 可能是 true
-           3. state.balancePay === props.pay 时候必须修改 state.bankCheck
+           3. state._balancePay === props.pay 时候必须修改 state.bankCheck
            4. 而在 render函数中是不可以更改 state 的
         */
         if (state.balanceCheck) {
             // 余额不能完全支付
             if (props.pay > props.balance) {
                 // 余额支付金额为全部余额
-                state.balancePay = props.balance
+                state._balancePay = props.balance
             }
             // 余额完全支付
             else {
                 // 余额支付金额为需支付金额
-                state.balancePay = props.pay
+                state._balancePay = props.pay
             }
         }
         // 不使用余额支付则余额支付 0 元
         else {
-            state.balancePay = 0
+            state._balancePay = 0
         }
 
         // @1 余额能完全支付则网银支付选项被禁用，并取消选中状态
-        if (this.state.balancePay === this.props.pay) {
+        if (this.state._balancePay === this.props.pay) {
             state.bankCheck = false
         }
 
         // 整个组件只允许在这里写 setState
-        // 因为不通过 ms 管理 balancePay 等状态无法正确更新
+        // 因为不通过 ms 管理 _balancePay 等状态无法正确更新
         this.setState(state)
     },
     balanceCheckOnChange: function () {
@@ -165,7 +165,7 @@ var App = React.createClass({
         // 使用网银支付
         if (state.bankCheck) {
             // 网银支付金额等于应付总计 - 余额支付金额
-            bankPay = props.pay - state.balancePay
+            bankPay = props.pay - state._balancePay
         }
         // 不使用网银支付
         else {
@@ -182,11 +182,11 @@ var App = React.createClass({
                         <label><input type="checkbox" checked={state.balanceCheck} onChange={this.balanceCheckOnChange} />余额支付（账户余额为：<span className="price" >{this.props.balance}</span>）</label>
                         </td>
                         <td>
-                        余额支付：<span className="price" >{state.balancePay}</span>
+                        余额支付：<span className="price" >{state._balancePay}</span>
                         </td>
                     </tr>
                     <tr className={classNames({
-                        "disable": state.balancePay === props.pay
+                        "disable": state._balancePay === props.pay
                     })}>
                     {/*
                         @1 余额能完全支付则网银支付选项被禁用，并取消选中状态
