@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../static/typo.css" >
+    <title>react-router</title>
+</head>
+
+<div id="demo"></div>
+
+<script src="../static/es5-shim.min.js"></script>
+<script src="../static/es5-sham.min.js"></script>
+<script src="../static/console-polyfill.js"></script>
+<script src="../static/classnames.js"></script>
+<script src="../static/react.js"></script>
+<script src="../static/react-dom.js"></script>
+<script src="../static/JSXTransformer.js"></script>
+<script src="../static/ReactRouter.js"></script>
+<script type="text/jsx">
+var Router = ReactRouter.Router
+var Route = ReactRouter.Route
+var hashHistory = ReactRouter.hashHistory
+var Redirect = ReactRouter.Redirect
+var IndexRoute = ReactRouter.IndexRoute
+var Link = ReactRouter.Link
+var IndexLink = ReactRouter.IndexLink
+var Nav = React.createClass({
+    render: function () {
+        return (
+            <div>
+                <Link to="/login/">/login</Link> -
+                <IndexLink to="/" activeClassName="active">Home</IndexLink>
+            </div>
+        )
+    }
+})
+var App = React.createClass({
+    render: function () {
+        return (
+            <div>
+            <Nav />
+            app
+            </div>
+        )
+    }
+})
+var Login = React.createClass({
+    render: function () {
+        return (
+            <div>
+            <Nav />
+            Login
+            </div>
+        )
+    }
+})
+
+ReactDOM.render((
+    <Router history={hashHistory}>
+        <Route path="/" component={App}/>
+        <Route path="/login/" component={Login} />
+        <Redirect from="/login_in/" to="/login/" />
+    </Router>
+), document.getElementById('demo'));
+</script>
+</body>
+</html>
